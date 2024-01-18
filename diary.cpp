@@ -18,6 +18,7 @@ constexpr const char* sql_list_by_author = "SELECT * FROM books ORDER BY last_na
 constexpr const char* sql_list_by_title = "SELECT * FROM books ORDER BY title";
 constexpr const char* sql_find_by_author = "SELECT * FROM books WHERE làst_name LIKE ?";
 constexpr const char* sql_find_by_title = "SELECT * FROM books WHERE title LIKE ?";
+constexpr const char* sql_max_pages = "SELECT title, first_name, last_name, MAX(pages) FROM books";
 constexpr const char* sql_check_book_table = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'books'";
 
 constexpr const char* menu[] = {
@@ -28,6 +29,7 @@ constexpr const char* menu[] = {
     "4) Find books by author",
     "5) Find books by title",
     "6) Delete book by id",
+    "7) Test",
     "X) Drop table and exit",
     "Q) Quit"
 };
@@ -68,7 +70,7 @@ void do_menu(SQLite& db) {
             response -= 0x20;
         }
         // check if we know this one
-        if (!strchr("0123456XQ", response)) {
+        if (!strchr("01234567XQ", response)) {
             puts("Invalid response");
             continue;
         }
@@ -103,6 +105,9 @@ void do_jump(SQLite& db, const char response) {
         break;
     case '6':
         do_delete(db);
+        break;
+    case '7':
+        do_test(db);
         break;
     case 'X':
         do_drop_exit(db);
@@ -183,6 +188,11 @@ void do_delete(SQLite& db) {
     if (!rc) {
         db.error_message("Could not delete row");
     }
+}
+
+void do_test(SQLite& db) {
+    db.select(sql_max_pages);
+    display_rows(db);
 }
 
 void do_drop_exit(SQLite& db) {

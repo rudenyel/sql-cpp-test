@@ -19,6 +19,8 @@ void do_list_by_title(SQLite & db);
 void do_find_by_author(SQLite & db);
 void do_find_by_title(SQLite & db);
 
+void do_test(SQLite& db);
+
 void do_drop_exit(SQLite & db);
 
 #endif
