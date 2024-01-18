@@ -7,10 +7,11 @@ constexpr const char* sql_create_table =
 "id INTEGER PRIMARY KEY AUTOINCREMENT,"
 "title VARCHAR(127) CHECK(title != ''),"
 "first_name VARCHAR(127) CHECK(first_name != ''),"
-"last_name VARCHAR(127) CHECK(last_name != '')"
+"last_name VARCHAR(127) CHECK(last_name != ''),"
+"pages INTEGER DEFAULT 0"
 ")"
 ;
-constexpr const char* sql_insert = "INSERT INTO books (title, first_name, last_name) VALUES (?, ?, ?)";
+constexpr const char* sql_insert = "INSERT INTO books (title, first_name, last_name, pages) VALUES (?, ?, ?, ?)";
 constexpr const char* sql_drop_table = "DROP TABLE IF EXISTS books";
 constexpr const char* sql_delete_by_id = "DELETE FROM books WHERE id = ?";
 constexpr const char* sql_list = "SELECT * FROM books";
@@ -154,6 +155,7 @@ void do_add(SQLite& db) {
     char title[MAX_SMALL_STRING_LENGTH];
     char first_name[MAX_SMALL_STRING_LENGTH];
     char last_name[MAX_SMALL_STRING_LENGTH];
+    char pages[MAX_SMALL_STRING_LENGTH];
 
     puts("Add book:");
     buf = promptline("Title");
@@ -162,7 +164,9 @@ void do_add(SQLite& db) {
     strncpy_s(first_name, buf, strlen(buf) + 1);
     buf = promptline("Author last name");
     strncpy_s(last_name, buf, strlen(buf) + 1);
-    int rc = db.execute(sql_insert, title, first_name, last_name);
+    buf = promptline("Pages");
+    strncpy_s(pages, buf, strlen(buf) + 1);
+    int rc = db.execute(sql_insert, title, first_name, last_name, pages);
     if (!rc) {
         db.error_message("Could not add row");
     }
