@@ -2,6 +2,8 @@
 #include "sqlite3-wrapper.h"
 #include "diary.h"
 
+constexpr const char* sql_check_book_table = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'books'";
+
 constexpr const char* sql_create_table =
 "CREATE TABLE IF NOT EXISTS books ("
 "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -11,16 +13,18 @@ constexpr const char* sql_create_table =
 "pages INTEGER DEFAULT 0"
 ")"
 ;
-constexpr const char* sql_insert = "INSERT INTO books (title, first_name, last_name, pages) VALUES (?, ?, ?, ?)";
-constexpr const char* sql_drop_table = "DROP TABLE IF EXISTS books";
-constexpr const char* sql_delete_by_id = "DELETE FROM books WHERE id = ?";
+
 constexpr const char* sql_list = "SELECT * FROM books";
-constexpr const char* sql_list_by_author = "SELECT * FROM books ORDER BY last_name";
-constexpr const char* sql_list_by_title = "SELECT * FROM books ORDER BY title";
-constexpr const char* sql_find_by_author = "SELECT * FROM books WHERE làst_name LIKE ?";
+constexpr const char* sql_list_by_author = "SELECT * FROM books ORDER BY last_name, title";
+constexpr const char* sql_list_by_title = "SELECT * FROM books ORDER BY title, last_name";
+constexpr const char* sql_insert = "INSERT INTO books (title, first_name, last_name, pages) VALUES (?, ?, ?, ?)";
+constexpr const char* sql_find_by_author = "SELECT * FROM books WHERE last_name LIKE ?";
 constexpr const char* sql_find_by_title = "SELECT * FROM books WHERE title LIKE ?";
+constexpr const char* sql_delete_by_id = "DELETE FROM books WHERE id = ?";
 constexpr const char* sql_max_pages = "SELECT title, first_name, last_name, MAX(pages) FROM books";
-constexpr const char* sql_check_book_table = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'books'";
+constexpr const char* sql_drop_table = "DROP TABLE IF EXISTS books";
+
+
 
 constexpr const char* menu[] = {
     "0) List books",
@@ -186,7 +190,7 @@ void do_find_by_title(SQLite& db) {
 
 void do_delete(SQLite& db) {
     const char* id = nullptr;
-    puts("Add book:");
+    puts("Delete book:");
     id = promptline("Delete book with ID");
     int rc = db.execute(sql_delete_by_id, id);
     if (!rc) {
